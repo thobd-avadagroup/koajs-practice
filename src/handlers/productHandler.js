@@ -2,22 +2,12 @@ const productRepository = require('../database/productRepository');
 
 async function getProducts(ctx) {
     try {
+        let limit = ctx.query.limit?.toString();
+        let order = ctx.query.order?.toString().toLowerCase();
         let fieldsQueryPram = ctx.query.fields?.toString();
+        let fieldsToFilter = fieldsQueryPram?.split(',');
 
-        let allProducts = await productRepository.getAll();
-        let selectedProducts = ctx.query.limit ? allProducts.slice(0, ctx.query.limit) : allProducts
-        if (fieldsQueryPram) {
-            let fieldsToFilter = fieldsQueryPram.split(',');
-            selectedProducts = selectedProducts.map((product) => {
-                let extractedProduct = {}
-                fieldsToFilter.forEach((field) => {
-                    if (Object.hasOwn(product, field)) {
-                        extractedProduct[field] = product[field];
-                    }
-                })
-                return extractedProduct;
-            })
-        }
+        let selectedProducts = await productRepository.getAll(fieldsToFilter, limit, order);
 
         ctx.body = {
             data: selectedProducts

@@ -12,6 +12,7 @@ app.use(routes.allowedMethods());
 
 // default route
 app.use(ctx => {
+  ctx.status = 404;
   ctx.body = '404 Not Found!';
 });
 

@@ -5,8 +5,29 @@ const DATABASE_FILE_PATH = path.join(__dirname, 'products.json');
 
 let loadedProducts = [...products]
 
-async function getAll() {
-    return loadedProducts;
+async function getAll(fields = undefined ,limit= undefined, order = '') {
+    let sortedProducts = loadedProducts.sort((first, second) => {
+        if (order === 'asc') {
+            return Date.parse(first.createdAt) - Date.parse(second.createdAt);
+        } else if (order === 'desc') {
+            return Date.parse(second.createdAt) - Date.parse(first.createdAt);
+        }
+        return 0;
+    });
+
+    let selectedProducts = limit ? loadedProducts.slice(0, limit) : sortedProducts
+    if (fields) {
+        return selectedProducts.map(product => {
+            return Object.keys(product).reduce((extractedProduct, key) => {
+                if (fields.includes(key)) {
+                    extractedProduct[key] = product[key];
+                }
+                return extractedProduct;
+            }, {});
+        })
+    }
+
+    return selectedProducts;
 }
 
 async function getOne(id) {
