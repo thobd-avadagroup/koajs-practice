@@ -15,12 +15,14 @@ app.use(ctx => {
   ctx.body = '404 Not Found!';
 });
 
-if (productRepository.getAll().length === 0) {
-  console.log('Sample data is being created...');
-  productSeeder.up(1000).then(() => {
-    console.log('Sample data is created!');
-  });
-}
+productRepository.getAll().then(products => {
+  if (products.length === 0) {
+    console.log('Sample data is being created...');
+    productSeeder.up(1000).then(() => {
+      console.log('Sample data is created!');
+    });
+  }
+});
 
 console.log('Server is running.');
 app.listen(3000);
